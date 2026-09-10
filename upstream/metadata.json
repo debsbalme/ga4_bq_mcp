@@ -1,0 +1,6 @@
+{
+  "name": "GA4 MCP Assistant",
+  "description": "TRKKN Google Analytics 4 Intelligence & MCP Assistant for real-time analytics querying, property exploration, and AI reporting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "BQ and GA4 MCP Assistant",
+  "description": "TRKKN enterprise Google Analytics 4 and Google Cloud BigQuery MCP Assistant with dataset/table explorer, SQL runner, and AI analytics engine.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
