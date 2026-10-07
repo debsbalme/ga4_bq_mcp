@@ -239,6 +239,9 @@ export default function App() {
         chart: data.chart,
         tableData: data.tableData,
         rawReportResponse: data.rawReportResponse,
+        rawBigQueryResult: data.rawBigQueryResult,
+        sourceType: data.sourceType,
+        comparisonData: data.comparisonData,
         propertyContext: currentProperty ? {
           id: currentProperty.propertyId,
           name: currentProperty.displayName
@@ -403,6 +406,7 @@ export default function App() {
         isOpen={isQueryBuilderOpen}
         onClose={() => setIsQueryBuilderOpen(false)}
         currentProperty={currentProperty}
+        accessToken={user?.accessToken}
         onSubmitQuery={handleSendMessage}
       />
 

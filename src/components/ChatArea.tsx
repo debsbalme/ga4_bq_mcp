@@ -8,6 +8,7 @@ import { ChatMessage, GA4Property } from '../types';
 import { AnalyticsCharts } from './AnalyticsCharts';
 import { DataTable } from './DataTable';
 import { KPICards } from './KPICards';
+import { ComparisonReconciliationCard } from './ComparisonReconciliationCard';
 import { MCPProtocolAccordion } from './MCPProtocolAccordion';
 import { QuickPrompts } from './QuickPrompts';
 import { FormattedMessage } from './FormattedMessage';
@@ -154,9 +155,17 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                     <AnalyticsCharts config={msg.chart} />
                   )}
 
+                  {/* Cross-Source Reconciliation Card */}
+                  {msg.comparisonData && (
+                    <ComparisonReconciliationCard data={msg.comparisonData} />
+                  )}
+
                   {/* Data Table */}
                   {msg.tableData && msg.tableData.rows.length > 0 && (
-                    <DataTable data={msg.tableData} />
+                    <DataTable 
+                      data={msg.tableData} 
+                      title={msg.sourceType === 'comparison' ? 'Side-by-Side Reconciliation Table' : undefined}
+                    />
                   )}
 
                   {/* MCP Tool Call Logs Accordion */}

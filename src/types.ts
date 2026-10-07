@@ -204,6 +204,51 @@ export interface MCPToolCallInfo {
   error?: string;
 }
 
+export interface ComparisonMetricRow {
+  metric: string;
+  metricLabel: string;
+  dimensionValue: string;
+  ga4Value: number;
+  bigQueryValue: number;
+  delta: number;
+  variancePercent: number;
+  status: 'match' | 'minor_variance' | 'discrepancy';
+}
+
+export interface ComparisonTotalRow {
+  metric: string;
+  metricLabel: string;
+  ga4Total: number;
+  bigQueryTotal: number;
+  delta: number;
+  variancePercent: number;
+  status: 'match' | 'minor_variance' | 'discrepancy';
+}
+
+export interface ComparisonDiagnostic {
+  factor: string;
+  impact: string;
+  explanation: string;
+}
+
+export interface GA4BQComparisonResult {
+  propertyId: string;
+  propertyName?: string;
+  projectId: string;
+  datasetId?: string;
+  dateRange: {
+    startDate: string;
+    endDate: string;
+  };
+  dimension?: string;
+  comparisonRows: ComparisonMetricRow[];
+  totals: ComparisonTotalRow[];
+  diagnostics: ComparisonDiagnostic[];
+  generatedSql?: string;
+  isProjected?: boolean;
+  notes?: string;
+}
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant' | 'system';
@@ -217,9 +262,10 @@ export interface ChatMessage {
     rows: (string | number)[][];
     totalRows: number;
   };
+  comparisonData?: GA4BQComparisonResult;
   rawReportResponse?: GA4ReportResponse;
   rawBigQueryResult?: BigQueryQueryResult;
-  sourceType?: 'ga4' | 'bigquery' | 'hybrid';
+  sourceType?: 'ga4' | 'bigquery' | 'hybrid' | 'comparison';
   propertyContext?: {
     id: string;
     name: string;
@@ -239,5 +285,31 @@ export interface MCPToolDefinition {
     properties: Record<string, unknown>;
     required?: string[];
   };
+}
+
+export interface GA4DimensionMetadata {
+  apiName: string;
+  uiName: string;
+  description: string;
+  deprecatedApiNames?: string[];
+  customDefinition?: boolean;
+  category?: string;
+}
+
+export interface GA4MetricMetadata {
+  apiName: string;
+  uiName: string;
+  description: string;
+  deprecatedApiNames?: string[];
+  type?: string;
+  customDefinition?: boolean;
+  category?: string;
+  expression?: string;
+}
+
+export interface GA4PropertyMetadata {
+  name: string;
+  dimensions: GA4DimensionMetadata[];
+  metrics: GA4MetricMetadata[];
 }
 

@@ -7,10 +7,11 @@ import {
   DollarSign, 
   ArrowRight,
   Database,
-  Code2,
-  Table,
-  Layers,
-  Users
+  Code2, 
+  Table, 
+  Layers, 
+  Users,
+  GitCompare
 } from 'lucide-react';
 import { TrkknLogo } from './TrkknLogo';
 
@@ -25,9 +26,19 @@ export const QuickPrompts: React.FC<QuickPromptsProps> = ({
   propertyName,
   isBigQueryEnabled = false
 }) => {
-  const [activeTab, setActiveTab] = useState<'all' | 'ga4' | 'bigquery'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'ga4' | 'bigquery' | 'compare'>('all');
 
   const ga4PromptGroups = [
+    {
+      icon: <Sparkles className="w-4 h-4 text-purple-600" />,
+      title: 'Dynamic Field & Schema Discovery',
+      source: 'ga4',
+      prompts: [
+        'Find every available dimension and metric in GA4 to power the MCP server',
+        'Discover all custom dimensions, event parameters, and metrics configured for this property',
+        'Show available GA4 dimensions and metrics grouped by category'
+      ]
+    },
     {
       icon: <TrendingUp className="w-4 h-4 text-blue-600" />,
       title: 'Real-Time & Immediate Trends',
@@ -93,8 +104,47 @@ export const QuickPrompts: React.FC<QuickPromptsProps> = ({
     }
   ];
 
-  const displayedGroups = (isBigQueryEnabled && activeTab === 'bigquery')
-    ? bigQueryPromptGroups
+  const comparisonPromptGroups = [
+    {
+      icon: <GitCompare className="w-4 h-4 text-cyan-600" />,
+      title: 'Cross-Source Reconciliation (GA4 vs BQ)',
+      source: 'comparison',
+      prompts: [
+        'Compare active users and sessions between GA4 API and BigQuery raw events for the last 7 days',
+        'Reconcile total event counts between BigQuery events_* tables and GA4 report and diagnose discrepancies',
+        'Compare top traffic acquisition channels between GA4 UI reports and BigQuery SQL'
+      ]
+    },
+    {
+      icon: <TrendingUp className="w-4 h-4 text-indigo-600" />,
+      title: 'Discrepancy & Variance Analysis',
+      source: 'comparison',
+      prompts: [
+        'Why do active users in GA4 UI differ from COUNT(DISTINCT user_pseudo_id) in BigQuery?',
+        'Compare conversion counts and session totals between GA4 and BigQuery with delta percentage',
+        'Check data consistency and export latency between GA4 live report and BigQuery partition tables'
+      ]
+    },
+    {
+      icon: <Layers className="w-4 h-4 text-purple-600" />,
+      title: 'MCP Specifications & Protocol Security',
+      source: 'comparison',
+      prompts: [
+        'Explain how the Model Context Protocol (MCP) securely proxies GA4 and BigQuery',
+        'Explain the 4-tier system architecture: Client, Gemini, MCP Server & Google Cloud',
+        'How does the Model Context Protocol handle authentication with zero-storage?'
+      ]
+    }
+  ];
+
+  const displayedGroups = isBigQueryEnabled 
+    ? (activeTab === 'bigquery' 
+        ? bigQueryPromptGroups 
+        : activeTab === 'compare' 
+          ? comparisonPromptGroups 
+          : activeTab === 'ga4' 
+            ? ga4PromptGroups 
+            : [...comparisonPromptGroups.slice(0, 1), ...ga4PromptGroups.slice(0, 2), ...bigQueryPromptGroups.slice(0, 1)])
     : ga4PromptGroups;
 
   return (
@@ -109,7 +159,7 @@ export const QuickPrompts: React.FC<QuickPromptsProps> = ({
           <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
           <span>Enterprise Intelligence</span>
           <span className="text-slate-400">•</span>
-          <span className="text-cyan-300">{isBigQueryEnabled ? 'GA4 & BigQuery MCP' : 'GA4 MCP Active'}</span>
+          <span className="text-cyan-300">{isBigQueryEnabled ? 'GA4 & BigQuery MCP (Cross-Reconciliation)' : 'GA4 MCP Active'}</span>
         </div>
 
         <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -117,14 +167,16 @@ export const QuickPrompts: React.FC<QuickPromptsProps> = ({
         </h2>
         
         <p className="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto leading-relaxed">
-          {isBigQueryEnabled && activeTab === 'bigquery'
-            ? 'Discover datasets, inspect table schemas, and run standard BigQuery SQL queries with natural language.'
-            : 'Ask questions in natural language. Powered by TRKKN\'s enterprise GA4 framework and Model Context Protocol to fetch verified dimensions, metrics, and interactive charts.'}
+          {isBigQueryEnabled && activeTab === 'compare'
+            ? 'Reconcile GA4 aggregated API reports directly against BigQuery raw event export tables, computing delta variances and diagnosing thresholding or sessionization causes.'
+            : isBigQueryEnabled && activeTab === 'bigquery'
+              ? 'Discover datasets, inspect table schemas, and run standard BigQuery SQL queries with natural language.'
+              : 'Ask questions in natural language. Powered by TRKKN\'s enterprise GA4 framework and Model Context Protocol to fetch verified dimensions, metrics, and interactive charts.'}
         </p>
 
         {/* Engine Tabs (Only displayed when BigQuery is enabled) */}
         {isBigQueryEnabled && (
-          <div className="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200 gap-1 mt-3">
+          <div className="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200 gap-1 mt-3 flex-wrap justify-center">
             <button
               onClick={() => setActiveTab('all')}
               className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
@@ -132,6 +184,15 @@ export const QuickPrompts: React.FC<QuickPromptsProps> = ({
               }`}
             >
               All Explorations
+            </button>
+            <button
+              onClick={() => setActiveTab('compare')}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                activeTab === 'compare' ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <GitCompare className="w-3 h-3" />
+              Reconcile (GA4 vs BQ)
             </button>
             <button
               onClick={() => setActiveTab('ga4')}
@@ -167,9 +228,13 @@ export const QuickPrompts: React.FC<QuickPromptsProps> = ({
                 {group.title}
               </div>
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                group.source === 'bigquery' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-blue-50 text-blue-700 border border-blue-200'
+                group.source === 'comparison'
+                  ? 'bg-cyan-50 text-cyan-700 border border-cyan-200'
+                  : group.source === 'bigquery' 
+                    ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' 
+                    : 'bg-blue-50 text-blue-700 border border-blue-200'
               }`}>
-                {group.source === 'bigquery' ? 'BigQuery SQL' : 'GA4 Data API'}
+                {group.source === 'comparison' ? 'GA4 vs BigQuery' : group.source === 'bigquery' ? 'BigQuery SQL' : 'GA4 Data API'}
               </span>
             </div>
 

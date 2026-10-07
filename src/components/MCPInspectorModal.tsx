@@ -40,10 +40,10 @@ export const MCPInspectorModal: React.FC<MCPInspectorModalProps> = ({
 
   const displayedTools = isBigQueryEnabled 
     ? tools 
-    : tools.filter(t => !t.name.startsWith('bigquery_'));
+    : tools.filter(t => !t.name.startsWith('bigquery_') && t.name !== 'compare_ga4_and_bigquery');
 
   useEffect(() => {
-    if (!isBigQueryEnabled && selectedTool.startsWith('bigquery_')) {
+    if (!isBigQueryEnabled && (selectedTool.startsWith('bigquery_') || selectedTool === 'compare_ga4_and_bigquery')) {
       setSelectedTool('ga4_run_report');
     }
   }, [isBigQueryEnabled, selectedTool]);
@@ -85,6 +85,16 @@ export const MCPInspectorModal: React.FC<MCPInspectorModalProps> = ({
     } else if (selectedTool === 'ga4_get_metadata') {
       setToolParamsJson(JSON.stringify({
         propertyId: propId
+      }, null, 2));
+    } else if (selectedTool === 'compare_ga4_and_bigquery') {
+      setToolParamsJson(JSON.stringify({
+        propertyId: propId,
+        projectId: 'bigquery-public-data',
+        datasetId: 'ga4_obfuscated_sample_ecommerce',
+        startDate: '7daysAgo',
+        endDate: 'yesterday',
+        metrics: ['activeUsers', 'sessions', 'eventCount'],
+        dimension: 'date'
       }, null, 2));
     } else if (selectedTool === 'bigquery_run_query') {
       setToolParamsJson(JSON.stringify({
