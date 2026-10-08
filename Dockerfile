@@ -9,7 +9,10 @@ RUN npm install --omit=dev
 
 COPY . .
 
+# Build the application
+RUN npm run build
+
 ENV PORT=8080
 EXPOSE 8080
 
-CMD ["node", "index.js"]
+CMD ["npm", "start"]
