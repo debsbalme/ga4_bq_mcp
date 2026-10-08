@@ -7,9 +7,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-const PORT = 8080;
+const PORT = Number(process.env.PORT) || 8080;
+const HOST = '0.0.0.0';
 
-app.use(express.json());
+
 
 // Initialize Gemini Client lazily
 function getGeminiClient(): GoogleGenAI | null {
@@ -2694,9 +2695,12 @@ async function start() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`GA4 MCP Server running on port ${PORT}`);
+  app.listen(PORT, HOST, () => {
+    console.log(`Server running on http://${HOST}:${PORT}`);
   });
+  
+app.use(express.json());
+
 }
 
 start();
