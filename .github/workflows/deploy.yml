@@ -40,10 +40,14 @@ jobs:
         run: |
           docker build -t $IMAGE_TAG .
           docker push $IMAGE_TAG
-
+          
       - name: Deploy Image to Cloud Run
         run: |
           gcloud run deploy ${{ env.SERVICE_NAME }} \
             --image ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPO }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
             --region ${{ env.REGION }} \
-            --project ${{ env.PROJECT_ID }} 
+            --project ${{ env.PROJECT_ID }} \
+            --timeout=3600 \
+            --cpu=1 \
+            --memory=512Mi \
+            --set-env-vars PORT=8080
